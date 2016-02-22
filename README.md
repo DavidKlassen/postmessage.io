@@ -24,10 +24,8 @@
 
 ## example of client code
 ```javascript
-  var client = new postmessage.Client(window);
+  var client = new postmessage.Client(window, '*');
   var serverWindow = document.createElement('iframe');
-  document.body.appendChild(serverWindow);
-  serverWindow.setAttribute('src', 'http://localhost:8081');
 
   client.on('connected', function () {
     console.log('connected to server');
@@ -46,5 +44,11 @@
     console.log('received message: ', msg);
   });
 
-  client.connect(serverWindow);
+  window.addEventListener('load', function () {
+    document.body.appendChild(serverWindow);
+    serverWindow.setAttribute('src', 'http://localhost:8081');
+    serverWindow.addEventListener('load', function () {
+      client.connect(serverWindow.contentWindow);
+    });
+  });
 ```
