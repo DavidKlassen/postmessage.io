@@ -5,16 +5,16 @@
   server.on('connection', function (client) {
     console.log('a client connected');
 
-//    client.send('message', 'hi from server!');
-//
-//    client.on('ping', function () {
-//      console.log('got ping');
-//      client.send('pong');
-//    });
-//
-//    client.on('disconnect', function () {
-//      console.log('a client disconnected');
-//    });
+    client.send('message', 'hi from server!');
+
+    client.on('ping', function () {
+      console.log('got ping');
+      client.send('pong');
+    });
+
+    client.on('disconnect', function () {
+      console.log('a client disconnected');
+    });
   });
 
   server.listen();
