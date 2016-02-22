@@ -35,7 +35,9 @@ describe('Client', () => {
             let spy = sinon.spy();
             client.on('message', spy);
             client.connect(serverWindow);
-            window.postMessage();
+            window.postMessage(JSON.stringify({
+                type: 'message'
+            }));
             client.disconnect();
             expect(spy).to.have.been.called;
         });

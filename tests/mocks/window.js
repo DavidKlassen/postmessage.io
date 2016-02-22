@@ -21,7 +21,10 @@ export class Window {
     postMessage(message) {
         if (this._handlers && this._handlers.message) {
             this._handlers.message.forEach((fn) => {
-                fn(message);
+                fn({
+                    data: message,
+                    source: this
+                });
             });
         }
     }
