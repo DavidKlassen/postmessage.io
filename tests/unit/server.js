@@ -28,9 +28,7 @@ describe('Server', () => {
             let spy = sinon.spy();
             server.on('connection', spy);
             server.listen();
-            window.postMessage({
-                type: 'connect'
-            });
+            window.postMessage({ data: JSON.stringify({ type: 'connection' }) });
             expect(spy).to.have.been.called;
         });
 

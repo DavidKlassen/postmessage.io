@@ -10,15 +10,20 @@ describe('Client', () => {
     });
 
     it('should create a Client instance', () => {
-        expect(new Client(window)).to.be.an.instanceof(Client);
+        expect(new Client(window, '*')).to.be.an.instanceof(Client);
     });
 
     it('should require a client window argument', () => {
-        expect(() => new Client()).to.throw(TypeError, /Client constructor expects a \'Window\' argument/);
+        expect(() => new Client()).to.throw(TypeError, /Client constructor expects a window argument/);
+    });
+
+    it('should require a target origin argument', () => {
+        expect(() => new Client(window)).to.throw(TypeError, /Client constructor expects a targetOrigin argument/);
     });
 
     describe('Client instance', () => {
-        let client = new Client(window);
+        let targetOrigin = '*';
+        let client = new Client(window, targetOrigin);
 
         it('should implement EventEmitter interface', () => {
             expect(client.on).to.be.a('function');
@@ -52,6 +57,16 @@ describe('Client', () => {
                 let serverWindow = new Window();
                 client.connect(serverWindow);
                 expect(spy).to.have.been.called;
+                client.disconnect();
+            });
+
+            it('should send a "connection" event to server window', () => {
+                let serverWindow = new Window();
+                let spy = sinon.spy(serverWindow, 'postMessage');
+                client.connect(serverWindow);
+                expect(spy).to.have.been.calledWith(JSON.stringify({
+                    type: 'connection'
+                }));
                 client.disconnect();
             });
         });
@@ -90,6 +105,20 @@ describe('Client', () => {
                 client.send();
                 client.disconnect();
                 expect(spy).to.have.been.called;
+            });
+
+            it('should call server window #postMessage method with provided targetOrigin', () => {
+                let serverWindow = new Window();
+                client.connect(serverWindow);
+                let spy = sinon.spy(serverWindow, 'postMessage');
+                let messageType = 'message';
+                let message = 'hello';
+                client.send(messageType, message);
+                client.disconnect();
+                expect(spy).to.have.been.calledWith(JSON.stringify({
+                    type: messageType,
+                    data: message
+                }), targetOrigin);
             });
 
             it('should throw error if client is not connected', () => {
