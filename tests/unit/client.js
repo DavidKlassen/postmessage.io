@@ -36,7 +36,7 @@ describe('Client', () => {
             client.on('message', spy);
             client.connect(serverWindow);
             window.postMessage(JSON.stringify({
-                type: 'message'
+                name: 'message'
             }));
             client.disconnect();
             expect(spy).to.have.been.called;
@@ -67,7 +67,8 @@ describe('Client', () => {
                 let spy = sinon.spy(serverWindow, 'postMessage');
                 client.connect(serverWindow);
                 expect(spy).to.have.been.calledWith(JSON.stringify({
-                    type: 'connection'
+                    name: 'connection',
+                    cid: client.getCid()
                 }));
                 client.disconnect();
             });
@@ -113,17 +114,16 @@ describe('Client', () => {
                 let serverWindow = new Window();
                 client.connect(serverWindow);
                 let spy = sinon.spy(serverWindow, 'postMessage');
-                let messageType = 'message';
-                let message = 'hello';
-                client.send(messageType, message);
+                let name = 'message';
+                let payload = 'hello';
+                client.send(name, payload);
                 client.disconnect();
-                expect(spy).to.have.been.calledWith(JSON.stringify({
-                    type: messageType,
-                    data: message
-                }), targetOrigin);
+                let cid = client.getCid();
+                expect(spy).to.have.been.calledWith(JSON.stringify({ name, payload, cid }), targetOrigin);
             });
 
             it('should throw error if client is not connected', () => {
+                client.connect(window);
                 client.disconnect();
                 expect(() => client.send()).to.throw(ClientError, /client is not connected/);
             });
@@ -132,6 +132,12 @@ describe('Client', () => {
         describe('#getServer method', () => {
             it('should be a function', () => {
                 expect(client.getServer).to.be.a('function');
+            });
+        });
+
+        describe('#getCid method', () => {
+            it('should be a function', () => {
+                expect(client.getCid).to.be.a('function');
             });
         });
     });
