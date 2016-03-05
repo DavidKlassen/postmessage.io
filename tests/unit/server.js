@@ -26,9 +26,11 @@ describe('Server', () => {
 
         it('should emit a "connection" event when receives "connect" a message', () => {
             let spy = sinon.spy();
+            let client = new Client(window, '*');
             server.on('connection', spy);
             server.listen();
-            window.postMessage(JSON.stringify({ name: 'connection', cid: 1 }));
+            client.connect(window);
+            client.disconnect();
             expect(spy).to.have.been.called;
         });
 
@@ -55,20 +57,21 @@ describe('Server', () => {
             it('should handle client messages', () => {
                 let client = new Client(window, '*');
                 let spy = sinon.spy();
-                server.on('connection', (client) => {
-                    client.on('message', spy);
+                server.on('connection', (c) => {
+                    c.on('message', spy);
                 });
                 server.listen();
                 client.connect(window);
                 client.send('message', 'foo');
+                client.disconnect();
                 expect(spy).to.have.been.calledWith('foo');
             });
 
             it('should handle disconnect message', () => {
                 let client = new Client(window, '*');
                 let spy = sinon.spy();
-                server.on('connection', (client) => {
-                    client.on('disconnected', spy);
+                server.on('connection', (c) => {
+                    c.on('disconnected', spy);
                 });
                 server.listen();
                 client.connect(window);
@@ -138,6 +141,8 @@ describe('Server', () => {
                 expect(server.getClient(window, cid1)).to.equal(c1);
                 server.removeClient(window, cid1);
                 expect(server.getClient(window, cid1)).to.be.undefined;
+                server.removeClient(window, cid2);
+                expect(server.getClient(window, cid2)).to.be.undefined;
             });
         });
     });

@@ -3,7 +3,7 @@ module.exports = function (config) {
         basePath: '../../',
         frameworks: ['mocha', 'browserify'],
         files: [
-            'dist/postmessage.min.js',
+            'dist/postmessage.io.min.js',
             'tests/config/setup.js',
             'tests/integration/**/*.js'
         ],

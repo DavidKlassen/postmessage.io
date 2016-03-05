@@ -57,12 +57,12 @@ gulp.task('browserify', function () {
         transform: [babelify]
     })
         .bundle()
-        .pipe(source('postmessage.js'))
+        .pipe(source('postmessage.io.js'))
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('compile', function () {
-    return gulp.src('dist/postmessage.js')
+    return gulp.src('dist/postmessage.io.js')
         .pipe(plugins.uglify())
         .pipe(plugins.rename({ extname: '.min.js' }))
         .pipe(gulp.dest('dist'));

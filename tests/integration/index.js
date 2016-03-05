@@ -15,6 +15,7 @@ describe('Connecting a client', () => {
         setTimeout(() => {
             expect(spy).to.have.been.called;
             client.disconnect();
+            server.unlisten();
             done();
         }, 100);
     });
@@ -29,6 +30,7 @@ describe('Connecting a client', () => {
         setTimeout(() => {
             expect(spy).to.have.been.called;
             client.disconnect();
+            server.unlisten();
             done();
         }, 100);
     });
@@ -43,6 +45,7 @@ describe('Connecting a client', () => {
         setTimeout(() => {
             expect(spy).to.have.been.calledWith(sinon.match.instanceOf(postmessage.Client));
             client.disconnect();
+            server.unlisten();
             done();
         }, 100);
     });
@@ -55,8 +58,8 @@ describe('Sending an event to server', () => {
         server.listen();
         let spy = sinon.spy();
         client.connect(window);
-        server.on('connection', (client) => {
-            client.on('my-event', spy);
+        server.on('connection', (c) => {
+            c.on('my-event', spy);
         });
         client.on('connected', () => {
             client.send('my-event');
@@ -64,6 +67,7 @@ describe('Sending an event to server', () => {
         setTimeout(() => {
             expect(spy).to.have.been.calledOnce;
             client.disconnect();
+            server.unlisten();
             done();
         }, 100);
     });
@@ -75,8 +79,8 @@ describe('Sending an event to server', () => {
         let spy = sinon.spy();
         let payload = { foo: 'bar' };
         client.connect(window);
-        server.on('connection', (client) => {
-            client.on('my-event', spy);
+        server.on('connection', (c) => {
+            c.on('my-event', spy);
         });
         client.on('connected', () => {
             client.send('my-event', payload);
@@ -85,6 +89,7 @@ describe('Sending an event to server', () => {
             expect(spy).to.have.been.calledOnce;
             expect(spy).to.have.been.calledWith(payload);
             client.disconnect();
+            server.unlisten();
             done();
         }, 100);
     });

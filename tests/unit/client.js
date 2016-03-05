@@ -36,10 +36,22 @@ describe('Client', () => {
             client.on('message', spy);
             client.connect(serverWindow);
             window.postMessage(JSON.stringify({
-                name: 'message'
+                name: 'message',
+                cid: 1
             }));
             client.disconnect();
             expect(spy).to.have.been.called;
+        });
+
+        it('should not handle malformed messages', () => {
+            let serverWindow = new Window();
+            let spy = sinon.spy();
+            client.on('message', spy);
+            client.connect(serverWindow);
+            window.postMessage('This is invalid JSON');
+            window.postMessage(JSON.stringify({ name: 'message' }));
+            client.disconnect();
+            expect(spy).to.not.have.been.called;
         });
 
         describe('#connect method', () => {
